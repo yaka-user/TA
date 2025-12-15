@@ -10,28 +10,18 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from sqlalchemy import desc, asc
 
-# =====================
-# Flask app
-# =====================
 app = Flask(__name__)
 
-# =====================
-# Config
-# =====================
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = "deadpork"
 
-# =====================
-# DB init
-# =====================
 db.init_app(app)
 migrate = Migrate(app, db)
 
-# Render / gunicorn 対策
-@app.before_first_request
-def create_tables():
+with app.app_context():
     db.create_all()
+
 
 # =====================
 # Login
