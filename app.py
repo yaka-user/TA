@@ -343,28 +343,39 @@ def calendar_view():
         followees=current_user.followees # モーダルで使うため渡す
     )
 
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 @app.route('/create', methods=['POST'])
 @login_required
 def create():
+    JST = ZoneInfo("Asia/Tokyo")
+
+    deadline_str = request.form['deadline']
+    deadline = datetime.fromisoformat(deadline_str).replace(tzinfo=JST)
+
     task = Task(
         user=current_user,
         name=request.form['name'],
-        deadline=request.form['deadline'],
+        deadline=deadline,
         is_shared=False,
     )
 
     share_with_ids = request.form.getlist('share_with')
     followee_ids = {u.id for u in current_user.followees}
+
     for uid in share_with_ids:
         if uid in followee_ids:
             u = User.query.get(uid)
             if u:
                 task.shared_with.append(u)
+
     task.is_shared = len(task.shared_with) > 0
 
     db.session.add(task)
     db.session.commit()
     return redirect('/')
+
 
 @app.route('/expired')
 @login_required
