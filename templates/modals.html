@@ -1,0 +1,217 @@
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">新しいタスクを作成</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/create" method="post">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input class="form-control" type="text" name="name" id="createName"
+                                    placeholder="タスク名を入力..." required>
+                                <label for="createName" class="col-form-label">タスク名</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input class="form-control" type="datetime-local" name="deadline" id="createDeadline"
+                                    required>
+                                <label for="createDeadline" class="col-form-label">締め切り日時</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">共有先（複数選択可）</label>
+                            <div class="checkbox-list-container">
+                                {% for u in followees %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="share_with" value="{{ u.id }}"
+                                        id="create_share_{{ u.id }}">
+                                    <label class="form-check-label" for="create_share_{{ u.id }}">
+                                        {{ u.lastname }} {{ u.firstname }} ({{ u.id }})
+                                    </label>
+                                </div>
+                                {% else %}
+                                <div class="text-muted small">フォローしているユーザーがいません</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                    <input class="btn btn-primary" type="submit" value="作成">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="completeModal" tabindex="-1" aria-labelledby="completeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="completeModalLabel">タスクの完了</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>「<strong id="modalCompleteTaskName"></strong>」を完了にしますか？</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                <form id="completeForm" action="" method="POST" style="display:inline;">
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="btn btn-success">完了にする</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">タスクの更新</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="updateForm" action="" method="post">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input class="form-control" type="text" name="name" id="modalTaskNameUpdate" value=""
+                                    required>
+                                <label for="modalTaskNameUpdate" class="col-form-label">タスク名</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input class="form-control" type="datetime-local" name="deadline" id="modalTaskDeadline"
+                                    value="" required>
+                                <label for="modalTaskDeadline" class="col-form-label">締め切り日時</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">共有先（複数選択可）</label>
+                            <div class="checkbox-list-container">
+                                {% for u in followees %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="share_with" value="{{ u.id }}"
+                                        id="update_share_{{ u.id }}">
+                                    <label class="form-check-label" for="update_share_{{ u.id }}">
+                                        {{ u.lastname }} {{ u.firstname }} ({{ u.id }})
+                                    </label>
+                                </div>
+                                {% else %}
+                                <div class="text-muted small">フォローしているユーザーがいません</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                    <button type="submit" class="btn btn-primary">更新</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">タスクの削除</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>本当に「<strong id="modalTaskName"></strong>」を削除しますか？</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+                <form id="deleteForm" action="" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">削除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 完了モーダル
+    var completeModal = document.getElementById('completeModal');
+    if (completeModal) {
+        completeModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            if (!button) return;
+
+            var taskId = button.getAttribute('data-bs-task-id');
+            var taskName = button.getAttribute('data-bs-task-name');
+
+            var modalCompleteTaskName = document.getElementById('modalCompleteTaskName');
+            var completeForm = document.getElementById('completeForm');
+
+            if (modalCompleteTaskName) modalCompleteTaskName.textContent = taskName || '';
+            if (completeForm) completeForm.action = '/complete/' + taskId;
+        });
+    }
+
+    // 削除モーダル
+    var deleteModal = document.getElementById('deleteModal');
+    if (deleteModal) {
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            if (!button) return;
+
+            var taskId = button.getAttribute('data-bs-task-id');
+            var taskName = button.getAttribute('data-bs-task-name');
+
+            var modalTaskName = document.getElementById('modalTaskName');
+            var deleteForm = document.getElementById('deleteForm');
+
+            if (modalTaskName) modalTaskName.textContent = taskName || '';
+            if (deleteForm) deleteForm.action = '/delete/' + taskId;
+        });
+    }
+
+    // 更新モーダル
+    var updateModal = document.getElementById('updateModal');
+    if (updateModal) {
+        updateModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            if (!button) return;
+
+            var taskId = button.getAttribute('data-bs-task-id');
+            var taskName = button.getAttribute('data-bs-task-name') || '';
+            var taskDeadline = button.getAttribute('data-bs-task-deadline') || '';
+
+            var taskShareIds = (button.getAttribute('data-bs-task-share-ids') || '')
+                .split(',')
+                .map(function (s) { return s.trim(); })
+                .filter(Boolean);
+
+            var updateForm = document.getElementById('updateForm');
+            var modalTaskNameInput = document.getElementById('modalTaskNameUpdate');
+            var modalTaskDeadlineInput = document.getElementById('modalTaskDeadline');
+
+            if (updateForm) updateForm.action = '/update/' + taskId;
+            if (modalTaskNameInput) modalTaskNameInput.value = taskName;
+            if (modalTaskDeadlineInput) modalTaskDeadlineInput.value = taskDeadline;
+
+            var setSelected = new Set(taskShareIds);
+            var checkBoxes = updateForm.querySelectorAll('input[name="share_with"]');
+
+            checkBoxes.forEach(function (box) {
+                // box.value が Set に含まれていればチェックする
+                box.checked = setSelected.has(String(box.value));
+            });
+        });
+    }
+</script>

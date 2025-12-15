@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow p-4" style="width: 380px;">
+        <h1 class="text-center mb-4">{{ title }}</h1>
+        <p class="text-center text-muted mb-4">すべて必須項目です</p>
+
+        <form action="/register" method="post">
+
+            <!-- ユーザID -->
+            <div class="mb-3">
+                <div class="form-floating">
+                    <input class="form-control" type="text" name="id" id="id" placeholder="ユーザIDを入力...">
+                    <label for="id">ユーザID</label>
+                </div>
+            </div>
+
+            <!-- パスワード（表示/非表示ボタン付き） -->
+            <div class="mb-3 position-relative">
+                <div class="form-floating">
+                    <input class="form-control" type="password" name="password" id="password" placeholder="パスワードを入力...">
+                    <label for="password">パスワード</label>
+                </div>
+
+                <!-- 👁 表示/非表示ボタン -->
+                <button type="button"
+                    class="btn btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2"
+                    id="togglePassword" tabindex="-1" style="padding: 4px 8px;">
+                    👁
+                </button>
+            </div>
+
+            <!-- 姓 -->
+            <div class="mb-3">
+                <div class="form-floating">
+                    <input class="form-control" type="text" name="lastname" id="lastname" placeholder="姓を入力...">
+                    <label for="lastname">姓</label>
+                </div>
+            </div>
+
+            <!-- 名 -->
+            <div class="mb-4">
+                <div class="form-floating">
+                    <input class="form-control" type="text" name="firstname" id="firstname" placeholder="名を入力...">
+                    <label for="firstname">名</label>
+                </div>
+            </div>
+
+
+
+            <!-- ボタン -->
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="/login" class="btn btn-secondary">戻る</a>
+                <input class="btn btn-primary px-4" type="submit" value="登録">
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- 👁 パスワード表示/非表示 制御スクリプト -->
+<script>
+    document.getElementById("togglePassword").addEventListener("click", function () {
+        const pwd = document.getElementById("password");
+        const type = pwd.getAttribute("type") === "password" ? "text" : "password";
+        pwd.setAttribute("type", type);
+
+        // アイコン切り替え
+        this.textContent = type === "password" ? "👁" : "🙈";
+    });
+</script>
+{% endblock content %}

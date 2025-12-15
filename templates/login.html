@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <div class="card shadow p-4" style="width: 380px;">
+    <h1 class="text-center mb-4">{{ title }}</h1>
+
+    <form action="/login" method="post">
+
+      <!-- ユーザID -->
+      <div class="mb-3">
+        <div class="form-floating">
+          <input class="form-control" type="text" name="id" id="id" placeholder="ユーザIDを入力...">
+          <label for="id">ユーザID</label>
+        </div>
+      </div>
+
+      <!-- パスワード（表示/非表示ボタン付き） -->
+      <div class="mb-3 position-relative">
+        <div class="form-floating">
+          <input class="form-control" type="password" name="password" id="password" placeholder="パスワードを入力...">
+          <label for="password">パスワード</label>
+        </div>
+
+        <!-- 👁 表示 / 非表示ボタン -->
+        <button type="button" class="btn btn-outline-secondary position-absolute top-50 end-0 translate-middle-y me-2"
+          id="togglePassword" tabindex="-1" style="padding: 4px 8px;">
+          👁
+        </button>
+      </div>
+
+      <!-- ログインボタン -->
+      <div class="text-center mt-3">
+        <input class="btn btn-primary w-100" type="submit" value="ログイン">
+        <div class="mt-3">
+          <a href="/register">新規ユーザ登録</a>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- 👁 パスワード表示/非表示 制御スクリプト -->
+<script>
+  document.getElementById("togglePassword").addEventListener("click", function () {
+    const pwd = document.getElementById("password");
+    const type = pwd.getAttribute("type") === "password" ? "text" : "password";
+    pwd.setAttribute("type", type);
+
+    // アイコン変更
+    this.textContent = type === "password" ? "👁" : "🙈";
+  });
+</script>
+{% endblock content %}
