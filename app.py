@@ -353,11 +353,13 @@ def create():
 
     deadline_str = request.form['deadline']
     deadline = datetime.fromisoformat(deadline_str).replace(tzinfo=JST)
-
+    
     task = Task(
         user=current_user,
         name=request.form['name'],
-        deadline=deadline,
+        deadline=datetime.fromisoformat(
+            request.form['deadline']
+        ).replace(tzinfo=ZoneInfo("Asia/Tokyo")),
         is_shared=False,
     )
 
@@ -405,8 +407,10 @@ def update(task_id):
         return redirect('/')
     
     task.name = request.form['name']
-    task.deadline = request.form['deadline']
-
+    task.deadline = datetime.fromisoformat(
+        request.form['deadline']
+    ).replace(tzinfo=ZoneInfo("Asia/Tokyo"))
+    
     share_with_ids = request.form.getlist('share_with')
     followee_ids = {u.id for u in current_user.followees}
     new_shared_users = []
