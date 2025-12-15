@@ -10,14 +10,32 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from sqlalchemy import desc, asc
 
+# =====================
+# Flask app
+# =====================
 app = Flask(__name__)
-with app.app_context():
-    db.create_all()
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
-app.secret_key = "deadpork"
-db.init_app(app)
-Migrate(app, db)
 
+# =====================
+# Config
+# =====================
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = "deadpork"
+
+# =====================
+# DB init
+# =====================
+db.init_app(app)
+migrate = Migrate(app, db)
+
+# Render / gunicorn 対策
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
+# =====================
+# Login
+# =====================
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
@@ -26,11 +44,14 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(user_id)
 
+# =====================
+# Routes
+# =====================
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == "GET":
         return render_template('register.html', title="ユーザー登録")
-    
+
     if (
         request.form["id"] == "" or
         request.form["password"] == "" or
@@ -61,10 +82,12 @@ def login():
 
     if request.method == "GET":
         return render_template('login.html', title="ログイン")
+
     user = User.query.get(request.form['id'])
-    if user is not None and user.verify_password(request.form['password']):
+    if user and user.verify_password(request.form['password']):
         login_user(user)
         return redirect('/')
+
     flash("ログインに失敗しました")
     return redirect('/login')
 
